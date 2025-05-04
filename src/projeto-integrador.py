@@ -1,3 +1,31 @@
+import sys
+import os
+
+# Adiciona a pasta "banco" ao caminho de importação
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'banco')))
+
+from conexao import conexao, cursor
+
+def inserir_Valores(consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str):
+    sql = """
+            insert into dados_consumo(consumo_de_agua,kwh,kg_de_residuos,porcentagem_de_residuos_reciclaveis,meio_de_trasporte,dt_digitada,dt_insercao)
+            VALUES (%s, %s, %s, %s, %s, %s,NOW())
+            """
+    valores = (consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str)
+    cursor.execute(sql, valores)
+    conexao.commit()
+def pegar_valores():
+        sql = "select * from dados_consumo ORDER BY dt_insercao desc LIMIT 1"
+        cursor.execute(sql)
+        resultados = cursor.fetchall()
+
+        consumo_de_agua = resultados[0]['consumo_de_agua']
+        kwh = resultados[0]['kwh']
+        kg_de_residuos = resultados[0]['kg_de_residuos']
+        porcentagem_de_residuos_reciclaveis = resultados[0]['porcentagem_de_residuos_reciclaveis']
+        meio_de_trasporte = resultados[0]['meio_de_trasporte'] 
+      
+
 print('=-'*15)
 print(' SISTEMA DE SUSTENTABILIDADE')
 print('=-'*15)
@@ -90,12 +118,17 @@ while rodar_novamente:
             if meio_de_trasporte < 1 or meio_de_trasporte > 6:
                 print('\033[91mA opção escolhida deve estar no intervalo de 1 a 6\033[0m')
             else:
+                inserir_Valores(consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str)
+
                 break
     #FEEDBACK DAS PERGUNTAS
     print('=-'*14)
     print('  FEEDBACK DAS PERGUNTAS')
     print('=-'*14)
     #RESULTADO DO CONSUMO DE ÁGUA
+    
+    pegar_valores()
+
     if consumo_de_agua < 150:
         print('Consumo de água: \033[92mAlta sustentabilidade.\033[0m')
     elif consumo_de_agua >= 150 and consumo_de_agua <= 200:
