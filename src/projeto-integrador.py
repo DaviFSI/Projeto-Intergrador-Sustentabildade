@@ -72,27 +72,36 @@ while rodar_novamente:
     #SEGUNDA PERGUNTA (SOBRE CONSUMO DE ÁGUA)
     while True:
         try:
-            consumo_de_agua = float(input('Quantos litros de água você consumiu hoje? (Aprox. em litros): '))
+            consumo_de_agua = float(input('Quantos litros de água você consumiu hoje? (Aprox. em litros): ').replace(',', '.'))
         except ValueError:
             print('\033[91mO valor precisa ser numérico\033[0m')
         else:
-            break
+            if consumo_de_agua < 0:
+                print('\033[91mO valor deve ser positivo\033[0m')
+            else:
+                break
     #TERCEIRA PERGUNTA (SOBRE KWH DE ENERGIA)
     while True:
         try:
-            kWh = float(input('Quantos kWh de energia elétrica você consumiu hoje?: '))
+            kWh = float(input('Quantos kWh de energia elétrica você consumiu hoje?: ').replace(',', '.'))
         except ValueError:
             print('\033[91mO valor precisa ser numérico\033[0m')
         else:
-            break
+            if kWh < 0:
+                print('\033[91mO valor deve ser positivo\033[0m')
+            else:
+                break
     #QUARTA PERGUNTA (SOBRE QUANTIDADE DE KG DE RESÍDUOS NÃO RECICLÁVEIS)
     while True:
         try:
-            kg_de_residuos = float(input('Quantos kg de resíduos não recicláveis você gerou hoje?: '))
+            kg_de_residuos = float(input('Quantos kg de resíduos não recicláveis você gerou hoje?: ').replace(',', '.'))
         except ValueError:
             print('\033[91mO valor precisa ser numérico\033[0m')
         else:
-            break
+            if kg_de_residuos < 0:
+                print('\033[91mO valor deve ser positivo\033[0m')
+            else:
+                break
     #QUINTA PERGUNTA (SOBRE PORCENTAGEM DE RESÍDUOS RECICLADOS NO TOTAL)
     while True:
         try:
@@ -100,7 +109,10 @@ while rodar_novamente:
         except ValueError:
             print('\033[91mO valor precisa ser numérico\033[0m')
         else:
-            break
+            if porcentagem_de_residuos_reciclaveis < 0:
+                print('\033[91mO valor deve ser positivo\033[0m')
+            else:
+                break
     #SEXTA PERGUNTA (SOBRE O MEIO DE TRASPORTE ULTILIZADO)
     while True:
         try:
