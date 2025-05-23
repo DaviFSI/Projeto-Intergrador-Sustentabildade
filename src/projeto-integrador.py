@@ -445,7 +445,20 @@ while rodar_novamente_programa:
                                                                     print('\033[91mA opção escolhida deve estar no intervalo de 1 a 6\033[0m')
                                                                 else:
                                                                     atualizar_valores(consumo_de_agua,kWh, kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str,idd)
-                                                                    transporte =False                                     
+                                                                    transporte =False
+                                                filtro_denovo = True
+                                                while filtro_denovo:
+                                                    continuar_registrar = input('Você gostaria de ATUALIZAR outros dados (SIM ou NAO): ').strip().upper()
+                                                    if continuar_registrar not in ['SIM', 'NAO']:
+                                                            print("Digite novamente: SIM ou NAO")
+                                                    elif continuar_registrar == 'NAO':                                                     
+                                                        filtro_denovo= False
+                                                        consulta_reg =False
+                                                        registro_while= False
+                                                    else:
+                                                        filtro_denovo= False  
+                                                                                 
+
                                               
 
                 elif menuresp == 5:
