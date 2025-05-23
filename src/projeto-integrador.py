@@ -1,29 +1,37 @@
 import sys
 import os
+import re
 
 #Adiciona a pasta "banco" ao caminho de importação
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'banco')))
 
 from conexao import conexao, cursor
 
-def inserir_Valores(consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str):
+def inserir_Valores(nome,consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str):
     sql = """
-            insert into dados_consumo(consumo_de_agua,kwh,kg_de_residuos,porcentagem_de_residuos_reciclaveis,meio_de_trasporte,dt_digitada,dt_insercao)
-            VALUES (%s, %s, %s, %s, %s, %s,NOW())
+            insert into dados_consumo(nome,consumo_de_agua,kwh,kg_de_residuos,porcentagem_de_residuos_reciclaveis,meio_de_trasporte,dt_digitada,dt_insercao)
+            VALUES (%s,%s, %s, %s, %s, %s, %s,NOW())
             """
     valores = (consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str)
     cursor.execute(sql, valores)
     conexao.commit()
-def pegar_valores():
-        sql = "select * from dados_consumo ORDER BY dt_insercao desc LIMIT 1"
-        cursor.execute(sql)
+def pegar_valores(nome):
+        sql = "select * from dados_consumo where NOME=%s ORDER BY dt_insercao desc "
+        valores=(nome)
+        cursor.execute(sql,valores)    
         resultados = cursor.fetchall()
+        for i in range(len(resultados)):
+            print(resultados[i][nome])
+        # consumo_de_agua = resultados[0]['consumo_de_agua']
+        # kwh = resultados[0]['kwh']
+        # kg_de_residuos = resultados[0]['kg_de_residuos']
+        # porcentagem_de_residuos_reciclaveis = resultados[0]['porcentagem_de_residuos_reciclaveis']
+        # meio_de_trasporte = resultados[0]['meio_de_trasporte'] 
 
-        consumo_de_agua = resultados[0]['consumo_de_agua']
-        kwh = resultados[0]['kwh']
-        kg_de_residuos = resultados[0]['kg_de_residuos']
-        porcentagem_de_residuos_reciclaveis = resultados[0]['porcentagem_de_residuos_reciclaveis']
-        meio_de_trasporte = resultados[0]['meio_de_trasporte'] 
+
+def validar_nome(nome):
+    padrao = r"^[A-Za-zÀ-ÿ]+(?: [A-Za-zÀ-ÿ]+)*$"
+    return re.fullmatch(padrao, nome) is not None
       
 
 print('=-'*15)
@@ -36,6 +44,7 @@ while rodar_novamente_programa:
     menu = True  
     while menu:
         rodar_novamente_resgistrar = True
+        nome =''
         try:
             menuresp = int(input('Selecione a opção que deseja: \n'
             '[1] Registrar Dados\n'
@@ -59,6 +68,18 @@ while rodar_novamente_programa:
                         residuos_reciclaveis= True
                         transporte= True
                         novamente= True
+                        user_while= True
+                        while user_while :
+                            try: 
+                                nome = input('Digite seu nome (Lembre-se dele para consultar dados)')
+                            except ValueError:
+                                print('\033[91mO valor precisa ser numérico\033[0m')  
+                            else: 
+                                if validar_nome(nome):
+                                    print("Nome válido!")
+                                    user_while= False
+                                else:
+                                    print("Nome inválido.")          
                         while data_while : #TESTE DE VALIDAÇÃO DA DATA
                             try:
                                 print('Escreva uma data seguindo o modelo (dia/mês/ano)\n ex: (20/11/2025)')
@@ -156,7 +177,7 @@ while rodar_novamente_programa:
                                 if meio_de_trasporte < 1 or meio_de_trasporte > 6:
                                     print('\033[91mA opção escolhida deve estar no intervalo de 1 a 6\033[0m')
                                 else:
-                                    inserir_Valores(consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str)    
+                                    inserir_Valores(nome,consumo_de_agua,kWh , kg_de_residuos, porcentagem_de_residuos_reciclaveis, meio_de_trasporte,data_str)    
                                     print('ok')
                                     transporte =False                                    
                         continuar_registrar = input('Você gostaria de Registrar Novamente? (SIM ou NAO): ').strip().upper()
@@ -174,36 +195,42 @@ while rodar_novamente_programa:
                     print('  FEEDBACK DAS PERGUNTAS')
                     print('=-'*14)
                     #RESULTADO DO CONSUMO DE ÁGUA
+                    while consulta_reg
+                        try:
+                            nome = input('Digite o nome que deseja procurar os resgistros')
+                        except ValueError:
+                            print('\033[91mO valor precisa ser texto\033[0m')
+                        else
+                        pegar_valores(nome)
 
-                    pegar_valores()
 
-                    if consumo_de_agua < 150:
-                        print('Consumo de água: \033[92mAlta sustentabilidade.\033[0m')
-                    elif consumo_de_agua >= 150 and consumo_de_agua <= 200:
-                        print('Consumo de água: \033[93mModerada sustentabilidade.\033[0m')
-                    elif consumo_de_agua > 200:
-                        print('Consumo de água: \033[91mBaixa sustentabilidade.\033[0m')
-                    #RESULTADO DO CONSUMO DE ENERGIA ELÉTRICA
-                    if kWh < 5:
-                        print('Consumo de energia: \033[92mAlta sustentabilidade.\033[0m')
-                    elif kWh >= 5 and kWh <= 10:
-                        print('Consumo de energia: \033[93mModerada sustentabilidade.\033[0m')
-                    elif kWh > 10:
-                        print('Consumo de energia: \033[91mBaixa sustentabilidade.\033[0m')
-                    #RESULTADO PORCENTAGEM DA GERAÇÃO DE RESÍDUOS NÃO RECICLÁVEIS
-                    if porcentagem_de_residuos_reciclaveis > 50:
-                        print('Geração de Resíduos Não Recicláveis: \033[92mAlta sustentabilidade.\033[0m')
-                    elif porcentagem_de_residuos_reciclaveis >= 20 and porcentagem_de_residuos_reciclaveis <= 50:
-                        print('Geração de Resíduos Não Recicláveis: \033[93mModerada sustentabilidade.\033[0m')
-                    elif porcentagem_de_residuos_reciclaveis < 20:
-                        print('Geração de Resíduos Não Recicláveis: \033[91mBaixa sustentabilidade.\033[0m')
-                    #RESULTADO DO TIPO DE TRASPORTE ULTILIZADO
-                    if meio_de_trasporte == 2 or meio_de_trasporte == 3 or meio_de_trasporte == 5:
-                        print('Uso de transporte: \033[92mAlta sustentabilidade.\033[0m')
-                    elif meio_de_trasporte == 6 or meio_de_trasporte == 1:
-                        print('Uso de trasporte: \033[93mModerada sustantabilidade.\033[0m')
-                    elif meio_de_trasporte == 4:
-                        print('Uso de transporte: \033[91mBaixa sustentabilidade.\033[0m')
+                        if consumo_de_agua < 150:
+                            print('Consumo de água: \033[92mAlta sustentabilidade.\033[0m')
+                        elif consumo_de_agua >= 150 and consumo_de_agua <= 200:
+                            print('Consumo de água: \033[93mModerada sustentabilidade.\033[0m')
+                        elif consumo_de_agua > 200:
+                            print('Consumo de água: \033[91mBaixa sustentabilidade.\033[0m')
+                        #RESULTADO DO CONSUMO DE ENERGIA ELÉTRICA
+                        if kWh < 5:
+                            print('Consumo de energia: \033[92mAlta sustentabilidade.\033[0m')
+                        elif kWh >= 5 and kWh <= 10:
+                            print('Consumo de energia: \033[93mModerada sustentabilidade.\033[0m')
+                        elif kWh > 10:
+                            print('Consumo de energia: \033[91mBaixa sustentabilidade.\033[0m')
+                        #RESULTADO PORCENTAGEM DA GERAÇÃO DE RESÍDUOS NÃO RECICLÁVEIS
+                        if porcentagem_de_residuos_reciclaveis > 50:
+                            print('Geração de Resíduos Não Recicláveis: \033[92mAlta sustentabilidade.\033[0m')
+                        elif porcentagem_de_residuos_reciclaveis >= 20 and porcentagem_de_residuos_reciclaveis <= 50:
+                            print('Geração de Resíduos Não Recicláveis: \033[93mModerada sustentabilidade.\033[0m')
+                        elif porcentagem_de_residuos_reciclaveis < 20:
+                            print('Geração de Resíduos Não Recicláveis: \033[91mBaixa sustentabilidade.\033[0m')
+                        #RESULTADO DO TIPO DE TRASPORTE ULTILIZADO
+                        if meio_de_trasporte == 2 or meio_de_trasporte == 3 or meio_de_trasporte == 5:
+                            print('Uso de transporte: \033[92mAlta sustentabilidade.\033[0m')
+                        elif meio_de_trasporte == 6 or meio_de_trasporte == 1:
+                            print('Uso de trasporte: \033[93mModerada sustantabilidade.\033[0m')
+                        elif meio_de_trasporte == 4:
+                            print('Uso de transporte: \033[91mBaixa sustentabilidade.\033[0m')
     # while novamente :
     #     continuar = input('Você gostaria de rodar novamente? (SIM ou NAO): ').strip().upper()
     #     if continuar not in ['SIM', 'NAO']:
